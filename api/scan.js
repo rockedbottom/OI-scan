@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 async function fetchOHLC(ticker) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=90d`;
+ const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=90d&includePrePost=false&events=div%2Csplit&corsDomain=finance.yahoo.com&.tsrc=finance`;
   const r = await fetch(url, {
     headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
     timeout: 8000,
@@ -21,6 +21,15 @@ async function fetchOHLC(ticker) {
       open:  q.open[i], high: q.high[i], low: q.low[i], close: q.close[i],
     });
   }
+
+  // Remove today's partial candle if market is still open
+const now = new Date();
+const nycHour = new Date(now.toLocaleString('en-US', {timeZone:'America/New_York'})).getHours();
+const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
+if (isWeekday && nycHour >= 9 && nycHour < 16 && candles.length > 0) {
+  candles.pop();
+}
+  
   return candles;
 }
 
@@ -34,7 +43,7 @@ function detectPattern(candles, minPrice) {
   const lastDate = new Date(last.date);
   const today = new Date();
   const diffDays = (today - lastDate) / (1000 * 60 * 60 * 24);
-  if (diffDays > 5) return null;
+  if (diffDays > 7) return null;
 
   const sma50 = candles.slice(-50).reduce((s,c) => s + c.close, 0) / 50;
   if (last.close <= sma50) return null;
