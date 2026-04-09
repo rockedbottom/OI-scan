@@ -26,8 +26,15 @@ async function fetchOHLC(ticker) {
 
 function detectPattern(candles, minPrice) {
   if (!candles || candles.length < 52) return null;
+
   const last = candles[candles.length - 1];
   if (last.close < minPrice) return null;
+
+  // Reject if the most recent candle is more than 5 days old
+  const lastDate = new Date(last.date);
+  const today = new Date();
+  const diffDays = (today - lastDate) / (1000 * 60 * 60 * 24);
+  if (diffDays > 5) return null;
 
   const sma50 = candles.slice(-50).reduce((s,c) => s + c.close, 0) / 50;
   if (last.close <= sma50) return null;
@@ -55,6 +62,8 @@ function detectPattern(candles, minPrice) {
     inRange:  `${ins.low.toFixed(2)}-${ins.high.toFixed(2)}`,
   };
 }
+
+
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
