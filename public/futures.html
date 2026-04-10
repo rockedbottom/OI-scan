@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futures Scanner — Outside→Inside Day</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f9f6f1; --surface:#fff; --border:#e2ddd6; --border2:#ede9e3;
+    --ink:#1a1714; --muted:#9e9890; --outside:#b45309; --inside:#1d6faf;
+    --bull:#166534; --bear:#991b1b; --neut:#888;
+    --indices:#7c3aed; --commodities:#b45309; --rates:#0369a1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:13px;min-height:100vh;}
+  .shell{max-width:1100px;margin:0 auto;padding:48px 24px 80px;}
+
+  .header{margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:24px;}
+  .eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .nav-link{font-size:10px;color:var(--muted);text-decoration:none;letter-spacing:.08em;border:1px solid var(--border);padding:3px 10px;border-radius:3px;float:right;margin-top:4px;}
+  .nav-link:hover{background:var(--border);}
+  h1{font-family:'Fraunces',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;line-height:1;letter-spacing:-.03em;}
+  h1 em{font-style:italic;color:var(--outside);}
+  .tagline{margin-top:8px;font-size:11px;color:var(--muted);line-height:1.8;}
+
+  /* Diagram */
+  .diagram{display:flex;align-items:flex-end;gap:6px;margin:18px 0 24px;}
+  .d-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .d-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;}
+  .arrow{color:#ccc;font-size:14px;margin-bottom:18px;}
+  .d-note{margin-left:12px;margin-bottom:16px;font-size:10px;color:var(--muted);line-height:1.7;max-width:160px;}
+
+  /* Universe cards */
+  .universe{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+  @media(max-width:640px){.universe{grid-template-columns:1fr;}}
+  .ucard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;}
+  .ucard-title{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;font-weight:500;}
+  .ucard-title.indices{color:var(--indices);}
+  .ucard-title.commodities{color:var(--commodities);}
+  .ucard-title.rates{color:var(--rates);}
+  .ucard-tickers{display:flex;flex-wrap:wrap;gap:4px;}
+  .tkr-chip{font-size:9px;padding:2px 7px;border-radius:3px;letter-spacing:.04em;}
+  .tkr-chip.indices{background:rgba(124,58,237,.08);color:var(--indices);border:1px solid rgba(124,58,237,.2);}
+  .tkr-chip.commodities{background:rgba(180,83,9,.08);color:var(--commodities);border:1px solid rgba(180,83,9,.2);}
+  .tkr-chip.rates{background:rgba(3,105,161,.08);color:var(--rates);border:1px solid rgba(3,105,161,.2);}
+
+  /* Controls */
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;}
+  .ctrl-group{display:flex;flex-direction:column;gap:6px;}
+  .ctrl-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  select{background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--ink);font-family:'DM Mono',monospace;font-size:12px;padding:8px 10px;outline:none;-webkit-appearance:none;min-width:130px;}
+  select:focus{border-color:var(--outside);}
+  .scan-btn{background:var(--ink);color:var(--bg);border:none;border-radius:4px;padding:10px 28px;font-family:'Fraunces',serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;align-self:flex-end;}
+  .scan-btn:hover:not(:disabled){opacity:.75;}
+  .scan-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+
+  /* Progress */
+  .progress-wrap{margin-bottom:20px;display:none;}
+  .progress-wrap.visible{display:block;}
+  .prog-top{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:6px;}
+  .prog-hits{color:var(--outside);}
+  .track{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:6px;}
+  .fill{height:100%;background:var(--outside);width:0%;transition:width .4s;border-radius:1px;}
+  .prog-status{font-size:10px;color:var(--muted);font-style:italic;}
+
+  /* Summary */
+  .summary{display:none;flex-wrap:wrap;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;}
+  .summary.visible{display:flex;}
+  .stat{flex:1;min-width:100px;padding:14px 18px;border-right:1px solid var(--border);}
+  .stat:last-child{border-right:none;}
+  .stat-val{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:900;line-height:1;}
+  .stat-key{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+  /* Filters */
+  .filters{display:none;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+  .filters.visible{display:flex;}
+  .pill{font-family:'DM Mono',monospace;font-size:10px;padding:4px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:20px;cursor:pointer;transition:all .12s;}
+  .pill.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+  /* Table */
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;display:none;}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  thead th{text-align:left;padding:10px 14px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);font-weight:500;white-space:nowrap;background:var(--surface);}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--border2);vertical-align:middle;white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover td{background:#f0ece4;}
+  .sym{font-family:'Fraunces',serif;font-size:15px;font-weight:700;}
+  .sym-sub{font-size:9px;color:var(--muted);display:block;font-family:'DM Mono',monospace;font-weight:400;}
+  .tag{display:inline-block;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;}
+  .tag-out{background:rgba(180,83,9,.08);color:var(--outside);border:1px solid rgba(180,83,9,.2);}
+  .tag-in{background:rgba(29,111,175,.08);color:var(--inside);border:1px solid rgba(29,111,175,.2);}
+  .tag-indices{background:rgba(124,58,237,.08);color:var(--indices);border:1px solid rgba(124,58,237,.2);}
+  .tag-commodities{background:rgba(180,83,9,.08);color:var(--commodities);border:1px solid rgba(180,83,9,.2);}
+  .tag-rates{background:rgba(3,105,161,.08);color:var(--rates);border:1px solid rgba(3,105,161,.2);}
+  .bull{color:var(--bull);} .bear{color:var(--bear);} .neut{color:var(--neut);}
+  .ratio-cell{display:flex;align-items:center;gap:6px;}
+  .ratio-bar{width:36px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .ratio-fill{height:100%;background:var(--inside);border-radius:2px;}
+  .mc{color:var(--muted);}
+
+  .empty{padding:40px;text-align:center;color:var(--muted);font-size:11px;border:1px dashed var(--border);border-radius:6px;display:none;}
+  .empty.visible{display:block;}
+  .error-box{padding:12px 16px;background:rgba(153,27,27,.05);border:1px solid rgba(153,27,27,.2);border-radius:6px;font-size:11px;color:var(--bear);margin-bottom:16px;display:none;}
+  .error-box.visible{display:block;}
+  .as-of{font-size:10px;color:var(--muted);margin-bottom:8px;}
+  .footnote{margin-top:28px;font-size:10px;color:var(--muted);line-height:1.9;border-top:1px solid var(--border);padding-top:14px;display:none;}
+
+  .all-clear{padding:32px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:none;}
+  .all-clear.visible{display:block;}
+  .all-clear-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;margin-bottom:8px;}
+  .all-clear-sub{font-size:11px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <a class="nav-link" href="/">← Stock Scanner</a>
+    <div class="eyebrow">Futures Scanner · Daily · Outside→Inside Day Combo</div>
+    <h1>Futures<br><em>Pattern</em> Scanner</h1>
+    <p class="tagline">Scans index, commodity and rates futures for the 3-bar Outside→Inside Day combo. No SMA filter — futures trade differently to stocks.</p>
+
+    <div class="diagram">
+      <div class="d-col">
+        <svg width="22" height="64" viewBox="0 0 22 64"><line x1="11" y1="4" x2="11" y2="60" stroke="#ccc" stroke-width="1.5"/><rect x="4" y="16" width="14" height="28" fill="#ccc" rx="1"/></svg>
+        <span class="d-lbl" style="color:#bbb">Base</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="d-col">
+        <svg width="22" height="64" viewBox="0 0 22 64"><line x1="11" y1="2" x2="11" y2="62" stroke="#b45309" stroke-width="1.5"/><rect x="4" y="8" width="14" height="48" fill="rgba(180,83,9,.1)" stroke="#b45309" stroke-width="1.5" rx="1"/></svg>
+        <span class="d-lbl" style="color:#b45309">Outside</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="d-col">
+        <svg width="22" height="64" viewBox="0 0 22 64"><line x1="11" y1="18" x2="11" y2="48" stroke="#1d6faf" stroke-width="1.5"/><rect x="4" y="22" width="14" height="20" fill="rgba(29,111,175,.1)" stroke="#1d6faf" stroke-width="1.5" rx="1"/></svg>
+        <span class="d-lbl" style="color:#1d6faf">Inside</span>
+      </div>
+      <div class="d-note">Outside engulfs base → Inside coils within. Breakout watch.</div>
+    </div>
+  </div>
+
+  <!-- Universe display -->
+  <div class="universe">
+    <div class="ucard">
+      <div class="ucard-title indices">Index Futures</div>
+      <div class="ucard-tickers" id="chips-indices"></div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-title commodities">Commodity Futures</div>
+      <div class="ucard-tickers" id="chips-commodities"></div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-title rates">Rates Futures</div>
+      <div class="ucard-tickers" id="chips-rates"></div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <label class="ctrl-lbl">Sector Filter</label>
+      <select id="sectorFilter">
+        <option value="all">All Sectors</option>
+        <option value="indices">Indices only</option>
+        <option value="commodities">Commodities only</option>
+        <option value="rates">Rates only</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label class="ctrl-lbl">Bias Filter</label>
+      <select id="biasFilter">
+        <option value="all">All Biases</option>
+        <option value="bullish">Bullish only</option>
+        <option value="bearish">Bearish only</option>
+        <option value="neutral">Neutral only</option>
+      </select>
+    </div>
+    <button class="scan-btn" id="scanBtn" onclick="startScan()">Run Scan</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="prog-top">
+      <span id="progText">Scanning…</span>
+      <span class="prog-hits" id="progHits"></span>
+    </div>
+    <div class="track"><div class="fill" id="progFill"></div></div>
+    <div class="prog-status" id="progStatus"></div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="summary" id="summary">
+    <div class="stat"><div class="stat-val" id="sFound">0</div><div class="stat-key">Patterns Found</div></div>
+    <div class="stat"><div class="stat-val" id="sBull">0</div><div class="stat-key">Bullish</div></div>
+    <div class="stat"><div class="stat-val" id="sBear">0</div><div class="stat-key">Bearish</div></div>
+    <div class="stat"><div class="stat-val" id="sScanned">0</div><div class="stat-key">Scanned</div></div>
+  </div>
+  <div class="as-of" id="asOf"></div>
+
+  <div class="filters" id="filters">
+    <button class="pill active" onclick="applyFilter('all',this)">All</button>
+    <button class="pill" onclick="applyFilter('bullish',this)">Bullish</button>
+    <button class="pill" onclick="applyFilter('bearish',this)">Bearish</button>
+    <button class="pill" onclick="applyFilter('neutral',this)">Neutral</button>
+  </div>
+
+  <div class="empty" id="emptyState"></div>
+  <div class="all-clear" id="allClear">
+    <div class="all-clear-title">No Patterns Found</div>
+    <div class="all-clear-sub">No Outside→Inside Day combos in the current data for your selected filters.</div>
+  </div>
+
+  <div class="table-wrap" id="tableWrap">
+    <table>
+      <thead><tr>
+        <th>Contract</th><th>Sector</th><th>Last Price</th>
+        <th>Outside Day</th><th>Inside Day</th><th>Bias</th>
+        <th>Range Ratio ↑</th><th>Outside Range</th><th>Inside Range</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footnote" id="footnote">
+    <strong>Range Ratio</strong> = Inside Day range ÷ Outside Day range. Lower = tighter coil = more energy.<br>
+    Data: Yahoo Finance continuous futures (front-month). Checks 3 most recent completed daily candles.<br>
+    No SMA filter applied — futures trend differently to equities.<br>
+    Not financial advice. Verify independently before trading.
+  </div>
+
+</div>
+
+<script>
+// ── Futures universe ───────────────────────────────────────────────────────────
+const FUTURES = {
+  indices: [
+    { symbol: 'ES=F',  name: 'S&P 500',  label: 'ES' },
+    { symbol: 'NQ=F',  name: 'Nasdaq 100', label: 'NQ' },
+    { symbol: 'YM=F',  name: 'Dow Jones', label: 'YM' },
+    { symbol: 'RTY=F', name: 'Russell 2000', label: 'RTY' },
+    { symbol: 'NKD=F', name: 'Nikkei 225', label: 'NK' },
+    { symbol: '^FCHI', name: 'CAC 40',    label: 'CAC' },
+    { symbol: '^GDAXI',name: 'DAX',       label: 'DAX' },
+    { symbol: '^FTSE', name: 'FTSE 100',  label: 'FTSE' },
+  ],
+  commodities: [
+    { symbol: 'GC=F',  name: 'Gold',        label: 'GC' },
+    { symbol: 'SI=F',  name: 'Silver',      label: 'SI' },
+    { symbol: 'CL=F',  name: 'Crude Oil',   label: 'CL' },
+    { symbol: 'SB=F',  name: 'Sugar',       label: 'SB' },
+    { symbol: 'KC=F',  name: 'Coffee',      label: 'KC' },
+    { symbol: 'CT=F',  name: 'Cotton',      label: 'CT' },
+    { symbol: 'NG=F',  name: 'Natural Gas', label: 'NG' },
+  ],
+  rates: [
+    { symbol: 'ZT=F',  name: '2-Year T-Note',  label: '2YR' },
+    { symbol: 'ZF=F',  name: '5-Year T-Note',  label: '5YR' },
+    { symbol: 'ZN=F',  name: '10-Year T-Note', label: '10YR' },
+    { symbol: 'ZB=F',  name: '30-Year T-Bond', label: '30YR' },
+  ],
+};
+
+const ALL_FUTURES = [
+  ...FUTURES.indices.map(f => ({...f, sector:'indices'})),
+  ...FUTURES.commodities.map(f => ({...f, sector:'commodities'})),
+  ...FUTURES.rates.map(f => ({...f, sector:'rates'})),
+];
+
+// Populate universe chips
+Object.entries(FUTURES).forEach(([sector, items]) => {
+  const el = document.getElementById('chips-' + sector);
+  items.forEach(f => {
+    const chip = document.createElement('span');
+    chip.className = 'tkr-chip ' + sector;
+    chip.textContent = f.label;
+    el.appendChild(chip);
+  });
+});
+
+// ── State ──────────────────────────────────────────────────────────────────────
+let allHits = [], activeFilter = 'all', scanning = false;
+
+// ── Pattern detection (client-side, no SMA filter for futures) ────────────────
+function detectPattern(candles) {
+  if (!candles || candles.length < 3) return null;
+
+  // Strip today's partial candle
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (candles[candles.length - 1].date === todayStr) candles.pop();
+  if (candles.length < 3) return null;
+
+  // Reject stale data (more than 7 days old)
+  const lastDate = new Date(candles[candles.length - 1].date);
+  if ((new Date() - lastDate) / 86400000 > 7) return null;
+
+  const base = candles[candles.length - 3];
+  const out  = candles[candles.length - 2];
+  const ins  = candles[candles.length - 1];
+
+  const isOutside = out.high > base.high && out.low < base.low;
+  const isInside  = ins.high < out.high  && ins.low  > out.low;
+  if (!isOutside || !isInside) return null;
+
+  const outRange = out.high - out.low;
+  const insRange = ins.high - ins.low;
+  const ratio    = outRange > 0 ? insRange / outRange : 1;
+  const bias     = ins.close > ins.open ? 'bullish' : ins.close < ins.open ? 'bearish' : 'neutral';
+
+  return {
+    outsideDate: out.date,
+    insideDate:  ins.date,
+    close:       ins.close,
+    bias, ratio: ratio.toFixed(3),
+    outRange: `${out.low.toFixed(2)}–${out.high.toFixed(2)}`,
+    inRange:  `${ins.low.toFixed(2)}–${ins.high.toFixed(2)}`,
+  };
+}
+
+// ── Fetch OHLC via scan API (reuse existing endpoint) ─────────────────────────
+async function fetchFuture(future) {
+  // Use the existing /api/scan endpoint with a single ticker
+  const r = await fetch('/api/scan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      tickers: [future.symbol],
+      minPrice: 0,   // no price filter for futures
+      bias: 'all',
+      futuresMode: true,  // tells the API to skip SMA filter
+    }),
+  });
+  if (!r.ok) return null;
+  const data = await r.json();
+  // Return the raw candle data by fetching directly
+  return data;
+}
+
+// Fetch candles directly from Yahoo via a proxy-friendly URL
+async function fetchCandles(symbol) {
+  const url = `/api/candles?symbol=${encodeURIComponent(symbol)}`;
+  const r = await fetch(url);
+  if (!r.ok) return null;
+  return await r.json();
+}
+
+// ── Main scan ──────────────────────────────────────────────────────────────────
+async function startScan() {
+  if (scanning) return;
+  scanning = true;
+  allHits  = [];
+
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true; btn.textContent = 'Scanning…';
+  document.getElementById('progressWrap').classList.add('visible');
+  document.getElementById('errorBox').classList.remove('visible');
+  document.getElementById('footnote').style.display = 'none';
+  document.getElementById('filters').classList.remove('visible');
+  document.getElementById('summary').classList.remove('visible');
+  document.getElementById('tableWrap').style.display = 'none';
+  document.getElementById('emptyState').classList.remove('visible');
+  document.getElementById('allClear').classList.remove('visible');
+
+  const sectorFilter = document.getElementById('sectorFilter').value;
+  const biasFilter   = document.getElementById('biasFilter').value;
+
+  const toScan = sectorFilter === 'all'
+    ? ALL_FUTURES
+    : ALL_FUTURES.filter(f => f.sector === sectorFilter);
+
+  let scanned = 0;
+
+  for (let i = 0; i < toScan.length; i++) {
+    const future = toScan[i];
+    const pct = Math.round(((i + 1) / toScan.length) * 100);
+    setProgress(pct, `Scanning ${future.name} (${future.label})…`, allHits.length ? `${allHits.length} patterns found` : '');
+
+    try {
+      const r = await fetch('/api/candles?symbol=' + encodeURIComponent(future.symbol));
+      if (r.ok) {
+        const candles = await r.json();
+        const match = detectPattern(candles);
+        if (match && (biasFilter === 'all' || match.bias === biasFilter)) {
+          allHits.push({ ...future, data: match });
+        }
+      }
+    } catch(e) { /* skip */ }
+    scanned++;
+  }
+
+  // Sort by range ratio
+  allHits.sort((a, b) => parseFloat(a.data.ratio) - parseFloat(b.data.ratio));
+
+  // Summary
+  document.getElementById('sFound').textContent  = allHits.length;
+  document.getElementById('sBull').textContent   = allHits.filter(h => h.data.bias === 'bullish').length;
+  document.getElementById('sBear').textContent   = allHits.filter(h => h.data.bias === 'bearish').length;
+  document.getElementById('sScanned').textContent = scanned;
+  document.getElementById('summary').classList.add('visible');
+  document.getElementById('asOf').textContent = 'Scanned at ' + new Date().toLocaleTimeString();
+  document.getElementById('filters').classList.add('visible');
+  document.getElementById('footnote').style.display = 'block';
+
+  setProgress(100, 'Scan complete.', '');
+  setTimeout(() => document.getElementById('progressWrap').classList.remove('visible'), 1000);
+
+  renderTable(getFiltered());
+
+  scanning = false;
+  btn.disabled = false;
+  btn.textContent = 'Re-scan';
+}
+
+function getFiltered() {
+  return activeFilter === 'all' ? allHits : allHits.filter(h => h.data.bias === activeFilter);
+}
+
+function applyFilter(bias, el) {
+  activeFilter = bias;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderTable(getFiltered());
+}
+
+function renderTable(rows) {
+  const wrap  = document.getElementById('tableWrap');
+  const empty = document.getElementById('emptyState');
+  const clear = document.getElementById('allClear');
+
+  if (!rows.length) {
+    wrap.style.display = 'none';
+    if (allHits.length === 0) {
+      clear.classList.add('visible');
+      empty.classList.remove('visible');
+    } else {
+      empty.textContent = 'No matches for this filter.';
+      empty.classList.add('visible');
+      clear.classList.remove('visible');
+    }
+    return;
+  }
+
+  empty.classList.remove('visible');
+  clear.classList.remove('visible');
+  wrap.style.display = 'block';
+
+  document.getElementById('tbody').innerHTML = rows.map(h => {
+    const d  = h.data;
+    const bc = d.bias === 'bullish' ? 'bull' : d.bias === 'bearish' ? 'bear' : 'neut';
+    const rw = Math.min(parseFloat(d.ratio) * 100, 100).toFixed(0);
+    const px = typeof d.close === 'number' ? d.close.toFixed(2) : d.close;
+    return `<tr>
+      <td><span class="sym">${h.label}<span class="sym-sub">${h.name}</span></span></td>
+      <td><span class="tag tag-${h.sector}">${h.sector}</span></td>
+      <td>${px}</td>
+      <td><span class="tag tag-out">Outside</span> <span class="mc">${d.outsideDate}</span></td>
+      <td><span class="tag tag-in">Inside</span> <span class="mc">${d.insideDate}</span></td>
+      <td class="${bc}">${d.bias}</td>
+      <td><div class="ratio-cell"><div class="ratio-bar"><div class="ratio-fill" style="width:${rw}%"></div></div>${d.ratio}</div></td>
+      <td class="mc">${d.outRange}</td>
+      <td class="mc">${d.inRange}</td>
+    </tr>`;
+  }).join('');
+}
+
+function setProgress(pct, status, hits) {
+  document.getElementById('progFill').style.width   = pct + '%';
+  document.getElementById('progText').textContent   = Math.round(pct) + '% complete';
+  document.getElementById('progStatus').textContent = status;
+  document.getElementById('progHits').textContent   = hits;
+}
+</script>
+</body>
+</html>
