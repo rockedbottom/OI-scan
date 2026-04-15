@@ -32,20 +32,6 @@
   .arrow{color:#ccc;font-size:14px;margin-bottom:18px;}
   .d-note{margin-left:12px;margin-bottom:16px;font-size:10px;color:var(--muted);line-height:1.7;max-width:160px;}
 
-  /* Universe cards */
-  .universe{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
-  @media(max-width:640px){.universe{grid-template-columns:1fr;}}
-  .ucard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;}
-  .ucard-title{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;font-weight:500;}
-  .ucard-title.indices{color:var(--indices);}
-  .ucard-title.commodities{color:var(--commodities);}
-  .ucard-title.rates{color:var(--rates);}
-  .ucard-tickers{display:flex;flex-wrap:wrap;gap:4px;}
-  .tkr-chip{font-size:9px;padding:2px 7px;border-radius:3px;letter-spacing:.04em;}
-  .tkr-chip.indices{background:rgba(124,58,237,.08);color:var(--indices);border:1px solid rgba(124,58,237,.2);}
-  .tkr-chip.commodities{background:rgba(180,83,9,.08);color:var(--commodities);border:1px solid rgba(180,83,9,.2);}
-  .tkr-chip.rates{background:rgba(3,105,161,.08);color:var(--rates);border:1px solid rgba(3,105,161,.2);}
-
   /* Controls */
   .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;}
   .ctrl-group{display:flex;flex-direction:column;gap:6px;}
@@ -55,6 +41,28 @@
   .scan-btn{background:var(--ink);color:var(--bg);border:none;border-radius:4px;padding:10px 28px;font-family:'Fraunces',serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;align-self:flex-end;}
   .scan-btn:hover:not(:disabled){opacity:.75;}
   .scan-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+
+  /* Section headers */
+  .section-hdr{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:28px 0 10px;display:flex;align-items:center;gap:10px;}
+  .section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  /* Price verification table */
+  .price-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:24px;}
+  .price-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;position:relative;}
+  .price-card.loading{opacity:.5;}
+  .price-card.error{border-color:rgba(153,27,27,.2);background:rgba(153,27,27,.03);}
+  .pc-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .pc-label.indices{color:var(--indices);}
+  .pc-label.commodities{color:var(--commodities);}
+  .pc-label.rates{color:var(--rates);}
+  .pc-name{font-size:10px;color:var(--muted);margin-bottom:6px;}
+  .pc-price{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;line-height:1;color:var(--ink);}
+  .pc-price.up{color:var(--bull);}
+  .pc-price.down{color:var(--bear);}
+  .pc-meta{display:flex;gap:10px;margin-top:5px;font-size:9px;color:var(--muted);}
+  .pc-date{font-size:9px;color:var(--muted);margin-top:3px;}
+  .pc-spinner{font-size:9px;color:var(--muted);}
+  .pc-sym{position:absolute;top:10px;right:12px;font-size:9px;color:var(--muted);letter-spacing:.04em;}
 
   /* Progress */
   .progress-wrap{margin-bottom:20px;display:none;}
@@ -79,7 +87,7 @@
   .pill{font-family:'DM Mono',monospace;font-size:10px;padding:4px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:20px;cursor:pointer;transition:all .12s;}
   .pill.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
 
-  /* Table */
+  /* Results table */
   .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;display:none;}
   table{width:100%;border-collapse:collapse;font-size:11.5px;}
   thead th{text-align:left;padding:10px 14px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);font-weight:500;white-space:nowrap;background:var(--surface);}
@@ -102,15 +110,8 @@
 
   .empty{padding:40px;text-align:center;color:var(--muted);font-size:11px;border:1px dashed var(--border);border-radius:6px;display:none;}
   .empty.visible{display:block;}
-  .error-box{padding:12px 16px;background:rgba(153,27,27,.05);border:1px solid rgba(153,27,27,.2);border-radius:6px;font-size:11px;color:var(--bear);margin-bottom:16px;display:none;}
-  .error-box.visible{display:block;}
   .as-of{font-size:10px;color:var(--muted);margin-bottom:8px;}
   .footnote{margin-top:28px;font-size:10px;color:var(--muted);line-height:1.9;border-top:1px solid var(--border);padding-top:14px;display:none;}
-
-  .all-clear{padding:32px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:none;}
-  .all-clear.visible{display:block;}
-  .all-clear-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;margin-bottom:8px;}
-  .all-clear-sub{font-size:11px;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -120,7 +121,7 @@
     <a class="nav-link" href="/">← Stock Scanner</a>
     <div class="eyebrow">Futures Scanner · Daily · Outside→Inside Day Combo</div>
     <h1>Futures<br><em>Pattern</em> Scanner</h1>
-    <p class="tagline">Scans index, commodity and rates futures for the 3-bar Outside→Inside Day combo. No SMA filter — futures trade differently to stocks.</p>
+    <p class="tagline">Scans index, commodity and rates futures for the 3-bar Outside→Inside Day combo.</p>
 
     <div class="diagram">
       <div class="d-col">
@@ -138,22 +139,6 @@
         <span class="d-lbl" style="color:#1d6faf">Inside</span>
       </div>
       <div class="d-note">Outside engulfs base → Inside coils within. Breakout watch.</div>
-    </div>
-  </div>
-
-  <!-- Universe display -->
-  <div class="universe">
-    <div class="ucard">
-      <div class="ucard-title indices">Index Futures</div>
-      <div class="ucard-tickers" id="chips-indices"></div>
-    </div>
-    <div class="ucard">
-      <div class="ucard-title commodities">Commodity Futures</div>
-      <div class="ucard-tickers" id="chips-commodities"></div>
-    </div>
-    <div class="ucard">
-      <div class="ucard-title rates">Rates Futures</div>
-      <div class="ucard-tickers" id="chips-rates"></div>
     </div>
   </div>
 
@@ -180,6 +165,11 @@
     <button class="scan-btn" id="scanBtn" onclick="startScan()">Run Scan</button>
   </div>
 
+  <!-- Price verification -->
+  <div class="section-hdr">Live Price Verification — check these against your broker</div>
+  <div class="price-grid" id="priceGrid"></div>
+
+  <!-- Progress -->
   <div class="progress-wrap" id="progressWrap">
     <div class="prog-top">
       <span id="progText">Scanning…</span>
@@ -189,16 +179,16 @@
     <div class="prog-status" id="progStatus"></div>
   </div>
 
-  <div class="error-box" id="errorBox"></div>
-
+  <!-- Summary -->
   <div class="summary" id="summary">
-    <div class="stat"><div class="stat-val" id="sFound">0</div><div class="stat-key">Patterns Found</div></div>
-    <div class="stat"><div class="stat-val" id="sBull">0</div><div class="stat-key">Bullish</div></div>
-    <div class="stat"><div class="stat-val" id="sBear">0</div><div class="stat-key">Bearish</div></div>
-    <div class="stat"><div class="stat-val" id="sScanned">0</div><div class="stat-key">Scanned</div></div>
+    <div class="stat"><div class="stat-val" id="sFound">—</div><div class="stat-key">Patterns Found</div></div>
+    <div class="stat"><div class="stat-val" id="sBull">—</div><div class="stat-key">Bullish</div></div>
+    <div class="stat"><div class="stat-val" id="sBear">—</div><div class="stat-key">Bearish</div></div>
+    <div class="stat"><div class="stat-val" id="sScanned">—</div><div class="stat-key">Scanned</div></div>
   </div>
   <div class="as-of" id="asOf"></div>
 
+  <!-- Filters -->
   <div class="filters" id="filters">
     <button class="pill active" onclick="applyFilter('all',this)">All</button>
     <button class="pill" onclick="applyFilter('bullish',this)">Bullish</button>
@@ -207,97 +197,138 @@
   </div>
 
   <div class="empty" id="emptyState"></div>
-  <div class="all-clear" id="allClear">
-    <div class="all-clear-title">No Patterns Found</div>
-    <div class="all-clear-sub">No Outside→Inside Day combos in the current data for your selected filters.</div>
-  </div>
 
+  <!-- Pattern results table -->
   <div class="table-wrap" id="tableWrap">
     <table>
       <thead><tr>
-        <th>Contract</th><th>Sector</th><th>Last Price</th>
-        <th>Outside Day</th><th>Inside Day</th><th>Bias</th>
-        <th>Range Ratio ↑</th><th>Outside Range</th><th>Inside Range</th>
+        <th>Contract</th>
+        <th>Sector</th>
+        <th>Last Close</th>
+        <th>Outside Day</th>
+        <th>Out O / H / L / C</th>
+        <th>Inside Day</th>
+        <th>In O / H / L / C</th>
+        <th>Bias</th>
+        <th>Range Ratio ↑</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 
   <div class="footnote" id="footnote">
+    <strong>Price Verification</strong> — always cross-check the prices shown above against your broker before acting.<br>
+    <strong>CAC, DAX, FTSE</strong> — cash index prices used (Yahoo does not carry these futures directly).<br>
+    <strong>Roll gaps</strong> — patterns falling on quarterly roll dates (3rd Friday of Mar/Jun/Sep/Dec) may be spurious.<br>
     <strong>Range Ratio</strong> = Inside Day range ÷ Outside Day range. Lower = tighter coil = more energy.<br>
-    Data: Yahoo Finance continuous futures (front-month). Checks 3 most recent completed daily candles.<br>
-    No SMA filter applied — futures trend differently to equities.<br>
     Not financial advice. Verify independently before trading.
   </div>
 
 </div>
 
 <script>
-// ── Futures universe ───────────────────────────────────────────────────────────
-const FUTURES = {
-  indices: [
-    { symbol: 'ES=F',  name: 'S&P 500',  label: 'ES' },
-    { symbol: 'NQ=F',  name: 'Nasdaq 100', label: 'NQ' },
-    { symbol: 'YM=F',  name: 'Dow Jones', label: 'YM' },
-    { symbol: 'RTY=F', name: 'Russell 2000', label: 'RTY' },
-    { symbol: 'NKD=F', name: 'Nikkei 225', label: 'NK' },
-    { symbol: '^FCHI', name: 'CAC 40',    label: 'CAC' },
-    { symbol: '^GDAXI',name: 'DAX',       label: 'DAX' },
-    { symbol: '^FTSE', name: 'FTSE 100',  label: 'FTSE' },
-  ],
-  commodities: [
-    { symbol: 'GC=F',  name: 'Gold',        label: 'GC' },
-    { symbol: 'SI=F',  name: 'Silver',      label: 'SI' },
-    { symbol: 'CL=F',  name: 'Crude Oil',   label: 'CL' },
-    { symbol: 'SB=F',  name: 'Sugar',       label: 'SB' },
-    { symbol: 'KC=F',  name: 'Coffee',      label: 'KC' },
-    { symbol: 'CT=F',  name: 'Cotton',      label: 'CT' },
-    { symbol: 'NG=F',  name: 'Natural Gas', label: 'NG' },
-  ],
-  rates: [
-    { symbol: 'ZT=F',  name: '2-Year T-Note',  label: '2YR' },
-    { symbol: 'ZF=F',  name: '5-Year T-Note',  label: '5YR' },
-    { symbol: 'ZN=F',  name: '10-Year T-Note', label: '10YR' },
-    { symbol: 'ZB=F',  name: '30-Year T-Bond', label: '30YR' },
-  ],
-};
-
-const ALL_FUTURES = [
-  ...FUTURES.indices.map(f => ({...f, sector:'indices'})),
-  ...FUTURES.commodities.map(f => ({...f, sector:'commodities'})),
-  ...FUTURES.rates.map(f => ({...f, sector:'rates'})),
+const FUTURES = [
+  // Indices
+  { symbol:'ES=F',   name:'S&P 500 Futures',    label:'ES',   sector:'indices' },
+  { symbol:'NQ=F',   name:'Nasdaq 100 Futures',  label:'NQ',   sector:'indices' },
+  { symbol:'YM=F',   name:'Dow Jones Futures',   label:'YM',   sector:'indices' },
+  { symbol:'RTY=F',  name:'Russell 2000 Futures',label:'RTY',  sector:'indices' },
+  { symbol:'NKD=F',  name:'Nikkei 225 Futures',  label:'NK',   sector:'indices' },
+  { symbol:'^FCHI',  name:'CAC 40 (cash)',        label:'CAC',  sector:'indices' },
+  { symbol:'^GDAXI', name:'DAX (cash)',            label:'DAX',  sector:'indices' },
+  { symbol:'^FTSE',  name:'FTSE 100 (cash)',       label:'FTSE', sector:'indices' },
+  // Commodities
+  { symbol:'GC=F',   name:'Gold Futures',         label:'GC',   sector:'commodities' },
+  { symbol:'SI=F',   name:'Silver Futures',       label:'SI',   sector:'commodities' },
+  { symbol:'CL=F',   name:'Crude Oil (WTI)',      label:'CL',   sector:'commodities' },
+  { symbol:'SB=F',   name:'Sugar #11 Futures',    label:'SB',   sector:'commodities' },
+  { symbol:'KC=F',   name:'Coffee Futures',       label:'KC',   sector:'commodities' },
+  { symbol:'CT=F',   name:'Cotton Futures',       label:'CT',   sector:'commodities' },
+  { symbol:'NG=F',   name:'Natural Gas Futures',  label:'NG',   sector:'commodities' },
+  // Rates
+  { symbol:'ZT=F',   name:'2-Year T-Note',        label:'2YR',  sector:'rates' },
+  { symbol:'ZF=F',   name:'5-Year T-Note',        label:'5YR',  sector:'rates' },
+  { symbol:'ZN=F',   name:'10-Year T-Note',       label:'10YR', sector:'rates' },
+  { symbol:'ZB=F',   name:'30-Year T-Bond',       label:'30YR', sector:'rates' },
 ];
 
-// Populate universe chips
-Object.entries(FUTURES).forEach(([sector, items]) => {
-  const el = document.getElementById('chips-' + sector);
-  items.forEach(f => {
-    const chip = document.createElement('span');
-    chip.className = 'tkr-chip ' + sector;
-    chip.textContent = f.label;
-    el.appendChild(chip);
-  });
-});
+let allHits = [], allCandles = {}, activeFilter = 'all', scanning = false;
 
-// ── State ──────────────────────────────────────────────────────────────────────
-let allHits = [], activeFilter = 'all', scanning = false;
+// ── Build price cards on load ─────────────────────────────────────────────────
+function buildPriceGrid() {
+  const grid = document.getElementById('priceGrid');
+  grid.innerHTML = FUTURES.map(f => `
+    <div class="price-card loading" id="pc-${f.label}">
+      <span class="pc-sym">${f.symbol}</span>
+      <div class="pc-label ${f.sector}">${f.label}</div>
+      <div class="pc-name">${f.name}</div>
+      <div class="pc-price" id="pcp-${f.label}"><span class="pc-spinner">loading…</span></div>
+      <div class="pc-meta">
+        <span>H: <span id="pch-${f.label}">—</span></span>
+        <span>L: <span id="pcl-${f.label}">—</span></span>
+        <span>O: <span id="pco-${f.label}">—</span></span>
+      </div>
+      <div class="pc-date" id="pcd-${f.label}"></div>
+    </div>
+  `).join('');
+}
 
-// ── Pattern detection (client-side, no SMA filter for futures) ────────────────
+// ── Fetch and display prices ──────────────────────────────────────────────────
+async function loadPrices() {
+  await Promise.all(FUTURES.map(async f => {
+    try {
+      const r = await fetch('/api/candles?symbol=' + encodeURIComponent(f.symbol));
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const candles = await r.json();
+      allCandles[f.symbol] = candles;
+
+      if (!candles || candles.length === 0) throw new Error('No data');
+
+      const last = candles[candles.length - 1];
+      const prev = candles[candles.length - 2];
+
+      const card  = document.getElementById('pc-' + f.label);
+      const priceEl = document.getElementById('pcp-' + f.label);
+
+      card.classList.remove('loading');
+
+      const chg = prev ? last.close - prev.close : 0;
+      const dir = chg > 0 ? 'up' : chg < 0 ? 'down' : '';
+      const chgStr = chg !== 0 ? ` (${chg > 0 ? '+' : ''}${chg.toFixed(2)})` : '';
+
+      priceEl.className = 'pc-price ' + dir;
+      priceEl.textContent = fmt(last.close) + chgStr;
+      document.getElementById('pch-' + f.label).textContent = fmt(last.high);
+      document.getElementById('pcl-' + f.label).textContent = fmt(last.low);
+      document.getElementById('pco-' + f.label).textContent = fmt(last.open);
+      document.getElementById('pcd-' + f.label).textContent = 'Date: ' + last.date;
+
+    } catch(e) {
+      const card = document.getElementById('pc-' + f.label);
+      card.classList.remove('loading');
+      card.classList.add('error');
+      document.getElementById('pcp-' + f.label).textContent = 'No data';
+      document.getElementById('pcd-' + f.label).textContent = e.message;
+    }
+  }));
+}
+
+// ── Pattern detection ─────────────────────────────────────────────────────────
 function detectPattern(candles) {
   if (!candles || candles.length < 3) return null;
 
   // Strip today's partial candle
   const todayStr = new Date().toISOString().slice(0, 10);
-  if (candles[candles.length - 1].date === todayStr) candles.pop();
-  if (candles.length < 3) return null;
+  const c = [...candles];
+  if (c[c.length - 1].date === todayStr) c.pop();
+  if (c.length < 3) return null;
 
   // Reject stale data (more than 7 days old)
-  const lastDate = new Date(candles[candles.length - 1].date);
-  if ((new Date() - lastDate) / 86400000 > 7) return null;
+  if ((new Date() - new Date(c[c.length - 1].date)) / 86400000 > 7) return null;
 
-  const base = candles[candles.length - 3];
-  const out  = candles[candles.length - 2];
-  const ins  = candles[candles.length - 1];
+  const base = c[c.length - 3];
+  const out  = c[c.length - 2];
+  const ins  = c[c.length - 1];
 
   const isOutside = out.high > base.high && out.low < base.low;
   const isInside  = ins.high < out.high  && ins.low  > out.low;
@@ -310,103 +341,69 @@ function detectPattern(candles) {
 
   return {
     outsideDate: out.date,
-    insideDate:  ins.date,
-    close:       ins.close,
+    out: { open: out.open, high: out.high, low: out.low, close: out.close },
+    insideDate: ins.date,
+    ins: { open: ins.open, high: ins.high, low: ins.low, close: ins.close },
+    close: ins.close,
     bias, ratio: ratio.toFixed(3),
-    outRange: `${out.low.toFixed(2)}–${out.high.toFixed(2)}`,
-    inRange:  `${ins.low.toFixed(2)}–${ins.high.toFixed(2)}`,
   };
 }
 
-// ── Fetch OHLC via scan API (reuse existing endpoint) ─────────────────────────
-async function fetchFuture(future) {
-  // Use the existing /api/scan endpoint with a single ticker
-  const r = await fetch('/api/scan', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      tickers: [future.symbol],
-      minPrice: 0,   // no price filter for futures
-      bias: 'all',
-      futuresMode: true,  // tells the API to skip SMA filter
-    }),
-  });
-  if (!r.ok) return null;
-  const data = await r.json();
-  // Return the raw candle data by fetching directly
-  return data;
-}
-
-// Fetch candles directly from Yahoo via a proxy-friendly URL
-async function fetchCandles(symbol) {
-  const url = `/api/candles?symbol=${encodeURIComponent(symbol)}`;
-  const r = await fetch(url);
-  if (!r.ok) return null;
-  return await r.json();
-}
-
-// ── Main scan ──────────────────────────────────────────────────────────────────
+// ── Main scan ─────────────────────────────────────────────────────────────────
 async function startScan() {
   if (scanning) return;
   scanning = true;
-  allHits  = [];
+  allHits = [];
 
   const btn = document.getElementById('scanBtn');
   btn.disabled = true; btn.textContent = 'Scanning…';
   document.getElementById('progressWrap').classList.add('visible');
-  document.getElementById('errorBox').classList.remove('visible');
+  document.getElementById('errorBox') && document.getElementById('errorBox').classList.remove('visible');
   document.getElementById('footnote').style.display = 'none';
   document.getElementById('filters').classList.remove('visible');
   document.getElementById('summary').classList.remove('visible');
   document.getElementById('tableWrap').style.display = 'none';
   document.getElementById('emptyState').classList.remove('visible');
-  document.getElementById('allClear').classList.remove('visible');
 
   const sectorFilter = document.getElementById('sectorFilter').value;
   const biasFilter   = document.getElementById('biasFilter').value;
+  const toScan = sectorFilter === 'all' ? FUTURES : FUTURES.filter(f => f.sector === sectorFilter);
 
-  const toScan = sectorFilter === 'all'
-    ? ALL_FUTURES
-    : ALL_FUTURES.filter(f => f.sector === sectorFilter);
+  // Load prices first (also populates allCandles cache)
+  setProgress(5, 'Fetching prices for all contracts…', '');
+  await loadPrices();
 
+  // Now detect patterns using cached candles
   let scanned = 0;
-
   for (let i = 0; i < toScan.length; i++) {
-    const future = toScan[i];
-    const pct = Math.round(((i + 1) / toScan.length) * 100);
-    setProgress(pct, `Scanning ${future.name} (${future.label})…`, allHits.length ? `${allHits.length} patterns found` : '');
+    const f = toScan[i];
+    setProgress(10 + Math.round(((i+1)/toScan.length) * 88),
+      `Checking pattern for ${f.name}…`,
+      allHits.length ? allHits.length + ' found' : '');
 
-    try {
-      const r = await fetch('/api/candles?symbol=' + encodeURIComponent(future.symbol));
-      if (r.ok) {
-        const candles = await r.json();
-        const match = detectPattern(candles);
-        if (match && (biasFilter === 'all' || match.bias === biasFilter)) {
-          allHits.push({ ...future, data: match });
-        }
-      }
-    } catch(e) { /* skip */ }
+    const candles = allCandles[f.symbol];
+    const match = detectPattern(candles);
+    if (match && (biasFilter === 'all' || match.bias === biasFilter)) {
+      allHits.push({ ...f, data: match });
+    }
     scanned++;
   }
 
-  // Sort by range ratio
   allHits.sort((a, b) => parseFloat(a.data.ratio) - parseFloat(b.data.ratio));
 
-  // Summary
-  document.getElementById('sFound').textContent  = allHits.length;
-  document.getElementById('sBull').textContent   = allHits.filter(h => h.data.bias === 'bullish').length;
-  document.getElementById('sBear').textContent   = allHits.filter(h => h.data.bias === 'bearish').length;
+  document.getElementById('sFound').textContent   = allHits.length;
+  document.getElementById('sBull').textContent    = allHits.filter(h => h.data.bias === 'bullish').length;
+  document.getElementById('sBear').textContent    = allHits.filter(h => h.data.bias === 'bearish').length;
   document.getElementById('sScanned').textContent = scanned;
   document.getElementById('summary').classList.add('visible');
-  document.getElementById('asOf').textContent = 'Scanned at ' + new Date().toLocaleTimeString();
+  document.getElementById('asOf').textContent     = 'Scanned at ' + new Date().toLocaleTimeString();
   document.getElementById('filters').classList.add('visible');
   document.getElementById('footnote').style.display = 'block';
 
-  setProgress(100, 'Scan complete.', '');
-  setTimeout(() => document.getElementById('progressWrap').classList.remove('visible'), 1000);
+  setProgress(100, 'Done.', '');
+  setTimeout(() => document.getElementById('progressWrap').classList.remove('visible'), 800);
 
   renderTable(getFiltered());
-
   scanning = false;
   btn.disabled = false;
   btn.textContent = 'Re-scan';
@@ -426,42 +423,37 @@ function applyFilter(bias, el) {
 function renderTable(rows) {
   const wrap  = document.getElementById('tableWrap');
   const empty = document.getElementById('emptyState');
-  const clear = document.getElementById('allClear');
-
   if (!rows.length) {
     wrap.style.display = 'none';
-    if (allHits.length === 0) {
-      clear.classList.add('visible');
-      empty.classList.remove('visible');
-    } else {
-      empty.textContent = 'No matches for this filter.';
-      empty.classList.add('visible');
-      clear.classList.remove('visible');
-    }
+    empty.textContent = allHits.length === 0 ? 'No Outside→Inside Day combos found.' : 'No matches for this filter.';
+    empty.classList.add('visible');
     return;
   }
-
   empty.classList.remove('visible');
-  clear.classList.remove('visible');
   wrap.style.display = 'block';
-
   document.getElementById('tbody').innerHTML = rows.map(h => {
     const d  = h.data;
     const bc = d.bias === 'bullish' ? 'bull' : d.bias === 'bearish' ? 'bear' : 'neut';
     const rw = Math.min(parseFloat(d.ratio) * 100, 100).toFixed(0);
-    const px = typeof d.close === 'number' ? d.close.toFixed(2) : d.close;
+    const ohlc = (o) => `${fmt(o.open)} / ${fmt(o.high)} / ${fmt(o.low)} / <strong>${fmt(o.close)}</strong>`;
     return `<tr>
       <td><span class="sym">${h.label}<span class="sym-sub">${h.name}</span></span></td>
       <td><span class="tag tag-${h.sector}">${h.sector}</span></td>
-      <td>${px}</td>
-      <td><span class="tag tag-out">Outside</span> <span class="mc">${d.outsideDate}</span></td>
-      <td><span class="tag tag-in">Inside</span> <span class="mc">${d.insideDate}</span></td>
+      <td><strong>${fmt(d.close)}</strong></td>
+      <td><span class="tag tag-out">Outside</span><br><span class="mc" style="font-size:10px">${d.outsideDate}</span></td>
+      <td class="mc" style="font-size:10px">${ohlc(d.out)}</td>
+      <td><span class="tag tag-in">Inside</span><br><span class="mc" style="font-size:10px">${d.insideDate}</span></td>
+      <td class="mc" style="font-size:10px">${ohlc(d.ins)}</td>
       <td class="${bc}">${d.bias}</td>
       <td><div class="ratio-cell"><div class="ratio-bar"><div class="ratio-fill" style="width:${rw}%"></div></div>${d.ratio}</div></td>
-      <td class="mc">${d.outRange}</td>
-      <td class="mc">${d.inRange}</td>
     </tr>`;
   }).join('');
+}
+
+function fmt(n) {
+  if (n == null) return '—';
+  if (n >= 1000) return n.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+  return n.toFixed(2);
 }
 
 function setProgress(pct, status, hits) {
@@ -470,6 +462,10 @@ function setProgress(pct, status, hits) {
   document.getElementById('progStatus').textContent = status;
   document.getElementById('progHits').textContent   = hits;
 }
+
+// Load prices on page open automatically
+buildPriceGrid();
+loadPrices();
 </script>
 </body>
 </html>
