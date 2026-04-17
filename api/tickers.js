@@ -1,3 +1,4 @@
+// v2 - updated ticker list
 const fetch = require('node-fetch');
 
 module.exports = async (req, res) => {
