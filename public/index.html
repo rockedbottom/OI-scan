@@ -150,7 +150,12 @@
     <div class="stat"><div class="stat-val" id="sTotal">—</div><div class="stat-key">Universe</div></div>
   </div>
   <div class="as-of" id="asOf"></div>
-
+<div id="copyBar" style="display:none;margin-bottom:12px;">
+    <button onclick="copyTickers()" style="font-family:'DM Mono',monospace;font-size:11px;padding:6px 16px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:4px;cursor:pointer;" id="copyBtn">
+      Copy ticker list
+    </button>
+    <span id="copyConfirm" style="font-size:10px;color:var(--bull);margin-left:10px;display:none;">✓ Copied to clipboard</span>
+  </div>
   <div class="filters" id="filters">
     <button class="pill active" onclick="applyFilter('all',this)">All</button>
     <button class="pill" onclick="applyFilter('bullish',this)">Bullish</button>
@@ -258,6 +263,7 @@
         renderTable(getFiltered());
         document.getElementById('filters').classList.add('visible');
         document.getElementById('footnote').style.display = 'block';
+        document.getElementById('copyBar').style.display = 'block';
       }
 
       setProgress(100, `Scan complete — ${universeSize.toLocaleString()} tickers scanned.`, `${allHits.length} patterns found`);
@@ -329,6 +335,17 @@
     document.getElementById('progStatus').textContent = status;
     document.getElementById('progHits').textContent   = hits;
   }
+function copyTickers() {
+    const list = getFiltered().map(h => h.ticker).join(',');
+    navigator.clipboard.writeText(list).then(() => {
+      const confirm = document.getElementById('copyConfirm');
+      confirm.style.display = 'inline';
+      setTimeout(() => confirm.style.display = 'none', 2500);
+    });
+  }
+
+
+  
 </script>
 </body>
 </html>
