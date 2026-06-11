@@ -7,8 +7,8 @@ module.exports = async (req, res) => {
   const symbol = req.query.symbol;
   if (!symbol) return res.status(400).json({ error: 'symbol required' });
 
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=60d&includePrePost=false`;
-
+const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=60d&includePrePost=false&_=${Date.now()}`;
+  
   try {
     const r = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
